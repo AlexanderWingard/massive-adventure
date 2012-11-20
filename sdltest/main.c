@@ -6,8 +6,13 @@
 //  Copyright (c) 2012 Alexander Wingård. All rights reserved.
 //
 #include <SDL/SDL.h>
+#ifdef APPLE
 #include "SDLMain.h"
 #include <GLUT/GLUT.h>
+#else
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif
 #include <stdio.h>
 
 /* screen width, height, and bit depth */
