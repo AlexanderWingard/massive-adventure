@@ -9,6 +9,11 @@
 /* Begin PBXBuildFile section */
 		D7FF13261652FCD20032A1F7 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = D7FF13251652FCD20032A1F7 /* main.c */; };
 		D7FF13281652FCD20032A1F7 /* sdltest.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = D7FF13271652FCD20032A1F7 /* sdltest.1 */; };
+		D7FF13321652FFC60032A1F7 /* SDLMain.m in Sources */ = {isa = PBXBuildFile; fileRef = D7FF13311652FDC50032A1F7 /* SDLMain.m */; };
+		D7FF1334165300790032A1F7 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7FF1333165300790032A1F7 /* Cocoa.framework */; };
+		D7FF1336165300830032A1F7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7FF1335165300830032A1F7 /* Foundation.framework */; };
+		D7FF1338165302100032A1F7 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7FF1337165302100032A1F7 /* OpenGL.framework */; };
+		D7FF133A165303130032A1F7 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7FF1339165303130032A1F7 /* SDL.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,8 +31,14 @@
 
 /* Begin PBXFileReference section */
 		D7FF13211652FCD20032A1F7 /* sdltest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sdltest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D7FF13251652FCD20032A1F7 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		D7FF13251652FCD20032A1F7 /* main.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; path = main.c; sourceTree = "<group>"; };
 		D7FF13271652FCD20032A1F7 /* sdltest.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = sdltest.1; sourceTree = "<group>"; };
+		D7FF13301652FDC50032A1F7 /* SDLMain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SDLMain.h; sourceTree = "<group>"; };
+		D7FF13311652FDC50032A1F7 /* SDLMain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SDLMain.m; sourceTree = "<group>"; };
+		D7FF1333165300790032A1F7 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		D7FF1335165300830032A1F7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		D7FF1337165302100032A1F7 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		D7FF1339165303130032A1F7 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +46,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7FF1338165302100032A1F7 /* OpenGL.framework in Frameworks */,
+				D7FF1336165300830032A1F7 /* Foundation.framework in Frameworks */,
+				D7FF1334165300790032A1F7 /* Cocoa.framework in Frameworks */,
+				D7FF133A165303130032A1F7 /* SDL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,8 +59,14 @@
 		D7FF13161652FCD20032A1F7 = {
 			isa = PBXGroup;
 			children = (
+				D7FF1337165302100032A1F7 /* OpenGL.framework */,
+				D7FF1335165300830032A1F7 /* Foundation.framework */,
+				D7FF1333165300790032A1F7 /* Cocoa.framework */,
 				D7FF13241652FCD20032A1F7 /* sdltest */,
 				D7FF13221652FCD20032A1F7 /* Products */,
+				D7FF13301652FDC50032A1F7 /* SDLMain.h */,
+				D7FF13311652FDC50032A1F7 /* SDLMain.m */,
+				D7FF1339165303130032A1F7 /* SDL.framework */,
 			);
 			sourceTree = "<group>";
 		};
@@ -117,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7FF13321652FFC60032A1F7 /* SDLMain.m in Sources */,
 				D7FF13261652FCD20032A1F7 /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -131,7 +153,7 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
@@ -161,7 +183,7 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_ARC = NO;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
@@ -180,6 +202,11 @@
 		D7FF132C1652FCD20032A1F7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../sdl\"",
+					"\"$(SRCROOT)\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -187,6 +214,11 @@
 		D7FF132D1652FCD20032A1F7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../sdl\"",
+					"\"$(SRCROOT)\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
