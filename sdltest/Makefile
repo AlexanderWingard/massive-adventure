@@ -4,7 +4,7 @@ LDFLAGS=$(shell sdl-config --libs) -lGL -lGLU
 all : sdltest
 
 sdltest: main.o
-	gcc -o $@ $^ $(LDFLAGS) 
+	$(CC) -o $@ $^ $(LDFLAGS) 
 
 .PHONY : clean
 
