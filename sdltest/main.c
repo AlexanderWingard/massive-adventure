@@ -26,8 +26,6 @@
 
 #define PI 3.1415926535897932384626433832795
 
-/* This is our SDL surface */
-SDL_Surface *surface;
 GLfloat moveX, moveY;
 
 /* function to release/destroy our resources and restoring the old desktop */
@@ -72,7 +70,7 @@ int resizeWindow( int width, int height )
 }
 
 /* function to handle key press events */
-void handleKeyPress( SDL_keysym *keysym )
+void handleKeyPress(SDL_Surface *surface, SDL_keysym *keysym)
 {
     switch ( keysym->sym )
 	{
@@ -198,7 +196,7 @@ int drawGLScene( GLvoid )
 
 //@param flags Video flags for SDL video subsystem
 //@return 0 on success.
-static int setupVideo(int *flags)
+static int setupVideo(int *flags, SDL_Surface *surface)
 {
     int videoFlags = 0;
     /* initialize SDL */
@@ -242,6 +240,25 @@ static int setupVideo(int *flags)
     SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, TRUE);
 
     *flags = videoFlags;
+
+    /* get a SDL surface */
+    surface = SDL_SetVideoMode( SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP,
+		videoFlags );
+
+    /* Verify there is a surface */
+    if ( !surface )
+	{
+	    fprintf( stderr,  "Video mode set failed: %s\n", SDL_GetError( ) );
+	    return 1;
+	}
+
+    /* initialize OpenGL */
+    initGL( );
+    
+    /* resize the initial window */
+    resizeWindow( SCREEN_WIDTH, SCREEN_HEIGHT );
+    SDL_WM_GrabInput( SDL_GRAB_ON );
+    SDL_ShowCursor(0);
     
     return 0;
 }
@@ -250,10 +267,11 @@ int main( int argc, char **argv )
 {
     /* Flags to pass to SDL_SetVideoMode */
     int videoFlags = 0;
-    
+	/* This is our SDL surface */
+	SDL_Surface *surface = NULL;
     {
         int retval = 0;
-        if((retval = setupVideo(&videoFlags)) != 0)
+        if((retval = setupVideo(&videoFlags, surface)) != 0)
         {
             Quit(retval);
         }
@@ -264,26 +282,6 @@ int main( int argc, char **argv )
     SDL_Event event;
     /* whether or not the window is active */
     int isActive = TRUE;
-    
-    
-    /* get a SDL surface */
-    surface = SDL_SetVideoMode( SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP,
-                               videoFlags );
-    
-    /* Verify there is a surface */
-    if ( !surface )
-	{
-	    fprintf( stderr,  "Video mode set failed: %s\n", SDL_GetError( ) );
-	    Quit( 1 );
-	}
-    
-    /* initialize OpenGL */
-    initGL( );
-    
-    /* resize the initial window */
-    resizeWindow( SCREEN_WIDTH, SCREEN_HEIGHT );
-    SDL_WM_GrabInput( SDL_GRAB_ON );
-    SDL_ShowCursor(0);
     
     /* wait for events */
     while ( !done )
@@ -318,7 +316,7 @@ int main( int argc, char **argv )
                     break;
                 case SDL_KEYDOWN:
                     /* handle key presses */
-                    handleKeyPress( &event.key.keysym );
+                    handleKeyPress(surface, &event.key.keysym);
                     break;
                 case SDL_MOUSEMOTION:
                     moveY += event.motion.yrel / 10.0f ;
