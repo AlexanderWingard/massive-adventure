@@ -1,13 +1,20 @@
 #TODO: Move this to root
 CFLAGS=$(shell sdl-config --cflags)
 LDFLAGS=$(shell sdl-config --libs) -lGL -lGLU
-all : sdltest
 
-sdltest: main.o
+TARGET=bin/sdltest
+
+all : $(TARGET)
+
+vpath %.c sdltest
+vpath %.h sdltest
+
+$(TARGET): $(BINDIR) main.o
+	$(shell mkdir bin)
 	$(CC) -o $@ $^ $(LDFLAGS) 
 
 .PHONY : clean
 
 clean:
 	$(RM) *.o
-	$(RM) sdltest
+	$(RM) $(TARGET)
