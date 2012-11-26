@@ -1,4 +1,3 @@
-#TODO: Move this to root
 CFLAGS=$(shell sdl-config --cflags)
 LDFLAGS=$(shell sdl-config --libs) -lGL -lGLU
 
