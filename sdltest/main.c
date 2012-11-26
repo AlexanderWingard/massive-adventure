@@ -196,27 +196,17 @@ int drawGLScene( GLvoid )
     return( TRUE );
 }
 
-int main( int argc, char **argv )
+static int setup(int *videoFlags)
 {
-    /* Flags to pass to SDL_SetVideoMode */
-    int videoFlags;
-    /* main loop variable */
-    int done = FALSE;
-    /* used to collect events */
-    SDL_Event event;
-    /* this holds some info about our display */
-    const SDL_VideoInfo *videoInfo;
-    /* whether or not the window is active */
-    int isActive = TRUE;
-    
     /* initialize SDL */
     if ( SDL_Init( SDL_INIT_VIDEO ) < 0 )
-	{
+    {
 	    fprintf( stderr, "Video initialization failed: %s\n",
                 SDL_GetError( ) );
-	    Quit( 1 );
+	    return 1;
 	}
-    
+    /* this holds some info about our display */
+    const SDL_VideoInfo *videoInfo;
     /* Fetch the video info */
     videoInfo = SDL_GetVideoInfo( );
     
@@ -224,29 +214,52 @@ int main( int argc, char **argv )
 	{
 	    fprintf( stderr, "Video query failed: %s\n",
                 SDL_GetError( ) );
-	    Quit( 1 );
+	    return 1;
 	}
-    
+
     /* the flags to pass to SDL_SetVideoMode */
-    videoFlags  = SDL_OPENGL;          /* Enable OpenGL in SDL */
-    videoFlags |= SDL_GL_DOUBLEBUFFER; /* Enable double buffering */
-    videoFlags |= SDL_HWPALETTE;       /* Store the palette in hardware */
-    videoFlags |= SDL_RESIZABLE;       /* Enable window resizing */
+    *videoFlags  = SDL_OPENGL;          /* Enable OpenGL in SDL */
+    *videoFlags |= SDL_GL_DOUBLEBUFFER; /* Enable double buffering */
+    *videoFlags |= SDL_HWPALETTE;       /* Store the palette in hardware */
+    *videoFlags |= SDL_RESIZABLE;       /* Enable window resizing */
     //videoFlags |= SDL_FULLSCREEN;
     
     /* This checks to see if surfaces can be stored in memory */
     if ( videoInfo->hw_available )
-        videoFlags |= SDL_HWSURFACE;
+        *videoFlags |= SDL_HWSURFACE;
     else
-        videoFlags |= SDL_SWSURFACE;
+        *videoFlags |= SDL_SWSURFACE;
     
     /* This checks if hardware blits can be done */
     if ( videoInfo->blit_hw )
-        videoFlags |= SDL_HWACCEL;
+        *videoFlags |= SDL_HWACCEL;
     
     /* Sets up OpenGL double buffering */
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
     SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, TRUE);
+    
+    return 0;
+}
+
+int main( int argc, char **argv )
+{
+    /* Flags to pass to SDL_SetVideoMode */
+    int videoFlags;
+    
+    {
+        int retval = 0;
+        if((retval = setup(&videoFlags)) != 0)
+        {
+            Quit(retval);
+        }
+    }
+    /* main loop variable */
+    int done = FALSE;
+    /* used to collect events */
+    SDL_Event event;
+    /* whether or not the window is active */
+    int isActive = TRUE;
+    
     
     /* get a SDL surface */
     surface = SDL_SetVideoMode( SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP,
