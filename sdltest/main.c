@@ -196,8 +196,11 @@ int drawGLScene( GLvoid )
     return( TRUE );
 }
 
-static int setup(int *videoFlags)
+//@param flags Video flags for SDL video subsystem
+//@return 0 on success.
+static int setupVideo(int *flags)
 {
+    int videoFlags = 0;
     /* initialize SDL */
     if ( SDL_Init( SDL_INIT_VIDEO ) < 0 )
     {
@@ -218,25 +221,27 @@ static int setup(int *videoFlags)
 	}
 
     /* the flags to pass to SDL_SetVideoMode */
-    *videoFlags  = SDL_OPENGL;          /* Enable OpenGL in SDL */
-    *videoFlags |= SDL_GL_DOUBLEBUFFER; /* Enable double buffering */
-    *videoFlags |= SDL_HWPALETTE;       /* Store the palette in hardware */
-    *videoFlags |= SDL_RESIZABLE;       /* Enable window resizing */
+    videoFlags  = SDL_OPENGL;          /* Enable OpenGL in SDL */
+    videoFlags |= SDL_GL_DOUBLEBUFFER; /* Enable double buffering */
+    videoFlags |= SDL_HWPALETTE;       /* Store the palette in hardware */
+    videoFlags |= SDL_RESIZABLE;       /* Enable window resizing */
     //videoFlags |= SDL_FULLSCREEN;
     
     /* This checks to see if surfaces can be stored in memory */
     if ( videoInfo->hw_available )
-        *videoFlags |= SDL_HWSURFACE;
+        videoFlags |= SDL_HWSURFACE;
     else
-        *videoFlags |= SDL_SWSURFACE;
+        videoFlags |= SDL_SWSURFACE;
     
     /* This checks if hardware blits can be done */
     if ( videoInfo->blit_hw )
-        *videoFlags |= SDL_HWACCEL;
+        videoFlags |= SDL_HWACCEL;
     
     /* Sets up OpenGL double buffering */
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
     SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, TRUE);
+
+    *flags = videoFlags;
     
     return 0;
 }
@@ -244,11 +249,11 @@ static int setup(int *videoFlags)
 int main( int argc, char **argv )
 {
     /* Flags to pass to SDL_SetVideoMode */
-    int videoFlags;
+    int videoFlags = 0;
     
     {
         int retval = 0;
-        if((retval = setup(&videoFlags)) != 0)
+        if((retval = setupVideo(&videoFlags)) != 0)
         {
             Quit(retval);
         }
