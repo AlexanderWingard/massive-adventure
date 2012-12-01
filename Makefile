@@ -9,7 +9,7 @@ vpath %.c sdltest
 vpath %.h sdltest
 
 $(TARGET): $(BINDIR) main.o
-	$(shell mkdir bin)
+	$(shell mkdir -p bin)
 	$(CC) -o $@ $^ $(LDFLAGS) 
 
 .PHONY : clean
