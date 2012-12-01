@@ -26,7 +26,13 @@
 
 #define PI 3.1415926535897932384626433832795
 
-GLfloat moveX, moveY;
+typedef struct 
+{
+	GLfloat x;
+	GLfloat y;
+	int active;
+	int quit;
+} sState;
 
 /* function to release/destroy our resources and restoring the old desktop */
 void Quit( int returnCode )
@@ -70,7 +76,7 @@ int resizeWindow( int width, int height )
 }
 
 /* function to handle key press events */
-void handleKeyPress(SDL_Surface *surface, SDL_keysym *keysym)
+void handleKeyPress(SDL_Surface *surface, sState *state, SDL_keysym const *keysym)
 {
     switch ( keysym->sym )
 	{
@@ -85,10 +91,10 @@ void handleKeyPress(SDL_Surface *surface, SDL_keysym *keysym)
             SDL_WM_ToggleFullScreen( surface );
             break;
         case SDLK_w:
-            moveX += 0.1f;
+            state->x = 0.1f;
             break;
         case SDLK_s:
-            moveX -= 0.1f;
+            state->x -= 0.1f;
             break;
         default:
             break;
@@ -123,7 +129,7 @@ int initGL( GLvoid )
 }
 
 /* Here goes our drawing code */
-int drawGLScene( GLvoid )
+int drawGLScene( sState const *state )
 {
     /* rotational vars for the triangle and quad, respectively */
     static GLfloat rtri, rquad;
@@ -137,7 +143,7 @@ int drawGLScene( GLvoid )
     
     /* Move Left 1.5 Units And Into The Screen 6.0 */
     glLoadIdentity();
-    gluLookAt(moveX, moveY, -20, 0, 0, 0, 0, 1, 0);
+    gluLookAt(state->x, state->y, -20, 0, 0, 0, 0, 1, 0);
     glPushMatrix();
     glTranslatef( -1.5f, 0.0f, 0.0f );
         
@@ -263,6 +269,74 @@ static int setupVideo(int *flags, SDL_Surface *surface)
     return 0;
 }
 
+static void handleEvent(SDL_Event const *event, sState *state,
+	SDL_Surface *surface, int videoFlags)
+{
+	switch(event->type)
+	{
+		case SDL_ACTIVEEVENT:
+		{
+			state->active = event->active.gain;
+			break;
+		}	
+		case SDL_VIDEORESIZE:
+		{
+			/* handle resize event */
+			surface = SDL_SetVideoMode( event->resize.w,
+				event->resize.h, 16, videoFlags );
+			if ( !surface )
+			{
+				fprintf( stderr, "Could not get a surface after resize: %s\n", SDL_GetError( ) );
+				Quit( 1 );
+			}
+			resizeWindow( event->resize.w, event->resize.h );
+			break;
+		}
+		case SDL_KEYDOWN:
+		{
+			/* handle key presses */
+			handleKeyPress(surface, state, &event->key.keysym);
+			break;
+		}
+		case SDL_MOUSEMOTION:
+		{
+			state->y += event->motion.yrel/10.0f;
+			state->x += event->motion.xrel/10.0f;
+			break;
+		}
+		case SDL_QUIT:
+		{
+			state->quit = TRUE;
+			break;
+		}
+		default:
+			break;
+	}
+}
+
+static int eventLoop(int videoFlags, SDL_Surface *surface)
+{
+    int done = FALSE;
+    SDL_Event event;
+	sState state;
+	state.active = TRUE;
+    state.quit = FALSE;
+
+    /* wait for events */
+    while(!state.quit)
+	{
+	    while(SDL_PollEvent(&event))
+		{
+			handleEvent(&event, &state, surface, videoFlags);
+		}
+        
+	    if(state.active)
+		{
+            drawGLScene(&state);
+		}
+	}
+}
+
 int main( int argc, char **argv )
 {
     /* Flags to pass to SDL_SetVideoMode */
@@ -276,69 +350,5 @@ int main( int argc, char **argv )
             Quit(retval);
         }
     }
-    /* main loop variable */
-    int done = FALSE;
-    /* used to collect events */
-    SDL_Event event;
-    /* whether or not the window is active */
-    int isActive = TRUE;
-    
-    /* wait for events */
-    while ( !done )
-	{
-	    /* handle the events in the queue */
-        
-	    while ( SDL_PollEvent( &event ) )
-		{
-		    switch( event.type )
-			{
-                case SDL_ACTIVEEVENT:
-                    /* Something's happend with our focus
-                     * If we lost focus or we are iconified, we
-                     * shouldn't draw the screen
-                     */
-                    if ( event.active.gain == 0 )
-                        isActive = FALSE;
-                    else
-                        isActive = TRUE;
-                    break;
-                case SDL_VIDEORESIZE:
-                    /* handle resize event */
-                    surface = SDL_SetVideoMode( event.resize.w,
-                                               event.resize.h,
-                                               16, videoFlags );
-                    if ( !surface )
-                    {
-                        fprintf( stderr, "Could not get a surface after resize: %s\n", SDL_GetError( ) );
-                        Quit( 1 );
-                    }
-                    resizeWindow( event.resize.w, event.resize.h );
-                    break;
-                case SDL_KEYDOWN:
-                    /* handle key presses */
-                    handleKeyPress(surface, &event.key.keysym);
-                    break;
-                case SDL_MOUSEMOTION:
-                    moveY += event.motion.yrel / 10.0f ;
-                    moveX += event.motion.xrel / 10.0f ;
-                    break;
-                case SDL_QUIT:
-                    /* handle quit requests */
-                    done = TRUE;
-                    break;
-                default:
-                    break;
-			}
-		}
-        
-	    /* draw the scene */
-	    if ( isActive )
-            drawGLScene( );
-	}
-    
-    /* clean ourselves up and exit */
-    Quit( 0 );
-    
-    /* Should never get here */
-    return( 0 );
+	Quit(eventLoop(videoFlags, surface));
 }
